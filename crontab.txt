@@ -1,0 +1,1 @@
+*/15 * * * * cd /app && python sync.py >> /var/log/pncp-sync.log 2>&1

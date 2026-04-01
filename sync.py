@@ -277,6 +277,8 @@ def sync_batch():
     """, (data_inicial, pagina))
     
     # Finalizar log
+    tp = total_paginas if isinstance(total_paginas, int) else 0
+    tr = total_registros if isinstance(total_registros, int) else 0
     cur.execute("""
         UPDATE sync_log SET 
             finalizado_em = NOW(),
@@ -286,9 +288,7 @@ def sync_batch():
             registros_atualizados = %s,
             status = 'success'
         WHERE id = %s
-    """, (total_paginas if 'total_paginas' in dir() else 0, 
-          total_registros if 'total_registros' in dir() else 0,
-          total_inseridos, total_atualizados, log_id))
+    """, (tp, tr, total_inseridos, total_atualizados, log_id))
     
     conn.commit()
     cur.close()

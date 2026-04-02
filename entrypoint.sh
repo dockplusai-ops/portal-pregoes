@@ -1,16 +1,22 @@
 #!/bin/bash
-set -e
+echo "Starting PNCP sync worker (with auto-restart)..."
 
-echo "Starting PNCP sync worker..."
-echo "Will run sync every 15 minutes"
+run_sync() {
+    python3 /app/sync.py
+    EXIT_CODE=$?
+    if [ $EXIT_CODE -ne 0 ]; then
+        echo "Sync exited with code $EXIT_CODE at $(date), retrying in 60s..."
+    fi
+    return $EXIT_CODE
+}
 
-# Rodar imediatamente no início
-python3 /app/sync.py
+# Rodar imediatamente
+run_sync
 
-# Loop a cada 15 minutos
+# Loop principal
 while true; do
-    echo "Sleeping 15 minutes..."
+    echo "Sleeping 15 minutes... ($(date))"
     sleep 900
     echo "Running sync at $(date)"
-    python3 /app/sync.py || echo "Sync failed, will retry in 15 minutes"
+    run_sync || echo "Sync failed, continuing loop..."
 done
